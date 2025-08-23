@@ -35,7 +35,7 @@ export default function MainScreen() {
       return;
     }
     const num = Number(input);
-    if (!isNaN(num)) {
+    if (!Number.isNaN(num)) {
       setNumbers((prev) => [...prev, num]);
       setInput("");
     } else {
