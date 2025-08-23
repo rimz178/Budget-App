@@ -59,21 +59,13 @@ export default function MainScreen() {
 			/>
 			<Button title="Lisää" onPress={handlePress} />
 			{error ? <Text style={styles.error}>{error}</Text> : null}
-			<Text style={{ marginTop: 20, fontWeight: "bold" }}>
-				Tallennetut luvut:
-			</Text>
+			<Text style={styles.title}>Tallennetut luvut:</Text>
 			<FlatList
 				data={numbers}
 				keyExtractor={(_, idx) => idx.toString()}
 				renderItem={({ item, index }) => (
-					<View
-						style={{
-							flexDirection: "row",
-							alignItems: "center",
-							marginVertical: 5,
-						}}
-					>
-						<Text style={{ marginRight: 10 }}>{item}</Text>
+					<View style={styles.listItemContainer}>
+						<Text style={styles.listItemText}>{item}</Text>
 						<Button title="Poista" onPress={() => deleteNumber(index)} />
 					</View>
 				)}

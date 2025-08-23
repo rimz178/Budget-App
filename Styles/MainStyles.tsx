@@ -26,4 +26,17 @@ export const styles = StyleSheet.create({
 		marginTop: 8,
 		marginBottom: 8,
 	},
+	// Uudet tyylit
+	title: {
+		marginTop: 20,
+		fontWeight: "bold",
+	},
+	listItemContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+		marginVertical: 5,
+	},
+	listItemText: {
+		marginRight: 10,
+	},
 });
