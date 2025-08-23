@@ -5,12 +5,20 @@ import { Button, FlatList, StyleSheet, Text, TextInput, View } from "react-nativ
 export default function MainScreen() {
   const [input, setInput] = useState<string>("");
   const [numbers, setNumbers] = useState<number[]>([]);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     const loadNumbers = async () => {
       const data = await AsyncStorage.getItem("numbers");
       if (data) {
-        setNumbers(JSON.parse(data));
+        try {
+          const parsed = JSON.parse(data);
+          if (Array.isArray(parsed)) {
+            setNumbers(parsed);
+          }
+        } catch {
+          setNumbers([]);
+        }
       }
     };
     loadNumbers();
@@ -21,12 +29,17 @@ export default function MainScreen() {
   }, [numbers]);
 
   const handlePress = () => {
+    setError("");
+    if (input.trim() === "") {
+      setError("Syötä luku!");
+      return;
+    }
     const num = Number(input);
     if (!isNaN(num)) {
       setNumbers((prev) => [...prev, num]);
       setInput("");
     } else {
-      alert("Syötä kelvollinen luku!");
+      setError("Syötä kelvollinen luku!");
     }
   };
 
@@ -41,6 +54,7 @@ export default function MainScreen() {
         keyboardType="numeric"
       />
       <Button title="Lisää" onPress={handlePress} />
+      {error ? <Text style={styles.error}>{error}</Text> : null}
       <Text style={{ marginTop: 20, fontWeight: "bold" }}>Tallennetut luvut:</Text>
       <FlatList
         data={numbers}
@@ -71,5 +85,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingHorizontal: 8,
     fontSize: 16,
+  },
+  error: {
+    color: "red",
+    marginTop: 8,
+    marginBottom: 8,
   },
 });
