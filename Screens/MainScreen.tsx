@@ -1,75 +1,96 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
-import { Button, FlatList, Text, TextInput, View } from "react-native";
+import { Button, Text, TextInput, View } from "react-native";
+import MainTable, { type TableRow } from "../components/MainTable";
 import { styles } from "../Styles/MainStyles";
 
+function getDaysOfMonth(year: number, month: number) {
+	const days = new Date(year, month + 1, 0).getDate();
+	return Array.from({ length: days }, (_, i) => i + 1);
+}
+
 export default function MainScreen() {
-	const [input, setInput] = useState<string>("");
-	const [numbers, setNumbers] = useState<number[]>([]);
-	const [error, setError] = useState<string>("");
+	const [rows, setRows] = useState<TableRow[]>([]);
+	const [title, setTitle] = useState("");
+	const [amount, setAmount] = useState("");
+	const [info, setInfo] = useState("");
+	const [type, setType] = useState<"tulo" | "meno">("tulo");
 
 	useEffect(() => {
-		const loadNumbers = async () => {
-			const data = await AsyncStorage.getItem("numbers");
-			if (data) {
-				try {
-					const parsed = JSON.parse(data);
-					if (Array.isArray(parsed)) {
-						setNumbers(parsed);
-					}
-				} catch {
-					setNumbers([]);
-				}
-			}
-		};
-		loadNumbers();
+		const now = new Date();
+		const year = now.getFullYear();
+		const month = now.getMonth();
+		const days = getDaysOfMonth(year, month);
+		const initialRows: TableRow[] = days.map((day) => ({
+			title: "",
+			amount: 0,
+			info: "",
+			date: `${year}-${(month + 1).toString().padStart(2, "0")}-${day
+				.toString()
+				.padStart(2, "0")}`,
+			type: "tulo",
+		}));
+		setRows(initialRows);
 	}, []);
 
-	useEffect(() => {
-		AsyncStorage.setItem("numbers", JSON.stringify(numbers));
-	}, [numbers]);
-
-	const handlePress = () => {
-		setError("");
-		if (input.trim() === "") {
-			setError("Syötä luku!");
-			return;
-		}
-		const num = Number(input);
-		if (!Number.isNaN(num)) {
-			setNumbers((prev) => [...prev, num]);
-			setInput("");
-		} else {
-			setError("Syötä kelvollinen luku!");
-		}
+	const handleAdd = () => {
+		if (!title.trim() || !amount.trim()) return;
+		setRows((prev) => [
+			...prev,
+			{
+				title,
+				amount: Number(amount),
+				info,
+				date: new Date().toISOString().slice(0, 10),
+				type,
+			},
+		]);
+		setTitle("");
+		setAmount("");
+		setInfo("");
+		setType("tulo");
 	};
-	const deleteNumber = (index: number) => {
-		setNumbers((prev) => prev.filter((_, idx) => idx !== index));
+
+	const deleteRow = (index: number) => {
+		setRows((prev) => prev.filter((_, idx) => idx !== index));
 	};
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.label}>Syötä luku:</Text>
+			<Text style={styles.title}>Lisää tulo tai meno</Text>
 			<TextInput
 				style={styles.input}
-				value={input}
-				onChangeText={setInput}
-				placeholder="Kirjoita luku"
+				value={title}
+				onChangeText={setTitle}
+				placeholder="Nimi"
+			/>
+			<TextInput
+				style={styles.input}
+				value={amount}
+				onChangeText={setAmount}
+				placeholder="Summa"
 				keyboardType="numeric"
 			/>
-			<Button title="Lisää" onPress={handlePress} />
-			{error ? <Text style={styles.error}>{error}</Text> : null}
-			<Text style={styles.title}>Tallennetut luvut:</Text>
-			<FlatList
-				data={numbers}
-				keyExtractor={(_, idx) => idx.toString()}
-				renderItem={({ item, index }) => (
-					<View style={styles.listItemContainer}>
-						<Text style={styles.listItemText}>{item}</Text>
-						<Button title="Poista" onPress={() => deleteNumber(index)} />
-					</View>
-				)}
+			<TextInput
+				style={styles.input}
+				value={info}
+				onChangeText={setInfo}
+				placeholder="Lisätietoa"
 			/>
+			<View
+				style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}
+			>
+				<Text style={{ marginRight: 8 }}>Tyyppi:</Text>
+				<Button
+					title={type === "tulo" ? "Tulo" : "Meno"}
+					onPress={() => setType(type === "tulo" ? "meno" : "tulo")}
+					color={type === "tulo" ? "green" : "red"}
+				/>
+			</View>
+			<Button title="Lisää" onPress={handleAdd} />
+			<Text style={styles.title}>Kuukauden tapahtumat</Text>
+			<View style={{ maxHeight: 350, width: "100%" }}>
+				<MainTable rows={rows} deleteRow={deleteRow} />
+			</View>
 		</View>
 	);
 }
