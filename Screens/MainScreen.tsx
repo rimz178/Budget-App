@@ -40,7 +40,7 @@ export default function MainScreen() {
 			setNumbers((prev) => [...prev, num]);
 			setInput("");
 		} else {
-			setError("Syötä kelvollinen luku!");
+			setError("Syötä kelvollinen luku!s");
 		}
 	};
 	const deleteNumber = (index: number) => {
