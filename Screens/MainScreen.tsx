@@ -1,4 +1,5 @@
-import { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
 import { Button, Text, TextInput, View } from "react-native";
 import MainTable from "../components/MainTable";
 import type { TableRow } from "../components/types";
@@ -8,31 +9,70 @@ export default function MainScreen() {
 	const [budgetCreated, setBudgetCreated] = useState(false);
 	const [budgetName, setBudgetName] = useState("");
 	const [monthlyIncome, setMonthlyIncome] = useState("");
-
 	const [rows, setRows] = useState<TableRow[]>([]);
 	const [title, setTitle] = useState("");
 	const [amount, setAmount] = useState("");
 	const [info, setInfo] = useState("");
 	const [type, setType] = useState<"tulo" | "meno">("tulo");
 
+	useEffect(() => {
+		const loadData = async () => {
+			try {
+				const json = await AsyncStorage.getItem("@budget_data");
+				if (!json) return;
+				const parsed = JSON.parse(json);
+				if (parsed.budgetName) setBudgetName(parsed.budgetName);
+				if (parsed.monthlyIncome)
+					setMonthlyIncome(String(parsed.monthlyIncome));
+				if (Array.isArray(parsed.rows)) setRows(parsed.rows);
+				if (parsed.budgetCreated) setBudgetCreated(true);
+			} catch (e) {
+				console.error("Error loading data", e);
+			}
+		};
+		loadData();
+	}, []);
+
+	const storeData = async (
+		nextRows: TableRow[],
+		nextBudgetName = budgetName,
+		nextMonthlyIncome = monthlyIncome,
+		nextBudgetCreated = budgetCreated,
+	) => {
+		try {
+			const jsonValue = JSON.stringify({
+				budgetName: nextBudgetName,
+				monthlyIncome: nextMonthlyIncome,
+				rows: nextRows,
+				budgetCreated: nextBudgetCreated,
+			});
+			await AsyncStorage.setItem("@budget_data", jsonValue);
+		} catch (e) {
+			console.error("Error saving data", e);
+		}
+	};
+
 	const handleCreateBudget = () => {
 		if (!monthlyIncome.trim()) return;
 		setBudgetCreated(true);
-		setRows([]);
+		const newRows: TableRow[] = [];
+		setRows(newRows);
+		storeData(newRows, budgetName, monthlyIncome, true);
 	};
 
 	const handleAdd = () => {
 		if (!title.trim() || !amount.trim()) return;
-		setRows((prev) => [
-			...prev,
-			{
-				title,
-				amount: Math.abs(Number(amount)),
-				info,
-				date: new Date().toISOString().slice(0, 10),
-				type,
-			},
-		]);
+		const newRow: TableRow = {
+			title,
+			amount: Math.abs(Number(amount)),
+			info,
+			date: new Date().toISOString().slice(0, 10),
+			type,
+		};
+		const newRows = [...rows, newRow];
+		setRows(newRows);
+		storeData(newRows, budgetName, monthlyIncome, true);
+
 		setTitle("");
 		setAmount("");
 		setInfo("");
@@ -40,7 +80,9 @@ export default function MainScreen() {
 	};
 
 	const deleteRow = (index: number) => {
-		setRows((prev) => prev.filter((_, idx) => idx !== index));
+		const newRows = rows.filter((_, idx) => idx !== index);
+		setRows(newRows);
+		storeData(newRows, budgetName, monthlyIncome, true);
 	};
 
 	const incomeNumber = Number(monthlyIncome || 0);
