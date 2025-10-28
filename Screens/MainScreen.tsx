@@ -1,36 +1,24 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Text, TextInput, View } from "react-native";
 import MainTable, { type TableRow } from "../components/MainTable";
 import { styles } from "../Styles/MainStyles";
 
-function getDaysOfMonth(year: number, month: number) {
-	const days = new Date(year, month + 1, 0).getDate();
-	return Array.from({ length: days }, (_, i) => i + 1);
-}
-
 export default function MainScreen() {
+	const [budgetCreated, setBudgetCreated] = useState(false);
+	const [budgetName, setBudgetName] = useState("");
+	const [monthlyIncome, setMonthlyIncome] = useState("");
+
 	const [rows, setRows] = useState<TableRow[]>([]);
 	const [title, setTitle] = useState("");
 	const [amount, setAmount] = useState("");
 	const [info, setInfo] = useState("");
 	const [type, setType] = useState<"tulo" | "meno">("tulo");
 
-	useEffect(() => {
-		const now = new Date();
-		const year = now.getFullYear();
-		const month = now.getMonth();
-		const days = getDaysOfMonth(year, month);
-		const initialRows: TableRow[] = days.map((day) => ({
-			title: "",
-			amount: 0,
-			info: "",
-			date: `${year}-${(month + 1).toString().padStart(2, "0")}-${day
-				.toString()
-				.padStart(2, "0")}`,
-			type: "tulo",
-		}));
-		setRows(initialRows);
-	}, []);
+	const handleCreateBudget = () => {
+		if (!monthlyIncome.trim()) return;
+		setBudgetCreated(true);
+		setRows([]);
+	};
 
 	const handleAdd = () => {
 		if (!title.trim() || !amount.trim()) return;
@@ -54,8 +42,38 @@ export default function MainScreen() {
 		setRows((prev) => prev.filter((_, idx) => idx !== index));
 	};
 
+	const incomeNumber = Number(monthlyIncome || 0);
+
+	// UI
+	if (!budgetCreated) {
+		return (
+			<View style={styles.container}>
+				<Text style={styles.title}>Luo uusi budjetti</Text>
+				<TextInput
+					style={styles.input}
+					value={budgetName}
+					onChangeText={setBudgetName}
+					placeholder="Budjetin nimi (esim. Lokakuu)"
+				/>
+				<TextInput
+					style={styles.input}
+					value={monthlyIncome}
+					onChangeText={setMonthlyIncome}
+					placeholder="Kuukausitulosi (€)"
+					keyboardType="numeric"
+				/>
+				<Button title="Luo budjetti" onPress={handleCreateBudget} />
+				<Text style={{ marginTop: 12, color: "#666" }}>
+					Budjetin luomisen jälkeen voit lisätä tuloja ja menoja.
+				</Text>
+			</View>
+		);
+	}
+
 	return (
 		<View style={styles.container}>
+			<Text style={styles.title}>{budgetName || "Budjetti"}</Text>
+
 			<Text style={styles.title}>Lisää tulo tai meno</Text>
 			<TextInput
 				style={styles.input}
@@ -87,9 +105,16 @@ export default function MainScreen() {
 				/>
 			</View>
 			<Button title="Lisää" onPress={handleAdd} />
+
 			<Text style={styles.title}>Kuukauden tapahtumat</Text>
 			<View style={{ maxHeight: 350, width: "100%" }}>
-				<MainTable rows={rows} deleteRow={deleteRow} />
+				{rows.length === 0 ? (
+					<Text style={{ color: "#666" }}>
+						Ei tapahtumia — lisää ensimmäinen yllä.
+					</Text>
+				) : (
+					<MainTable rows={rows} deleteRow={deleteRow} income={incomeNumber} />
+				)}
 			</View>
 		</View>
 	);
