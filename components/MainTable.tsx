@@ -1,41 +1,19 @@
 import { Button, FlatList, Text, View } from "react-native";
 import { styles } from "../Styles/MainStyles";
-
-export type TableRow = {
-	title: string;
-	amount: number;
-	info: string;
-	date?: string;
-	type?: "tulo" | "meno";
-};
+import BudgetSummary from "./BudgetSummary";
+import type { TableRow } from "./types";
 
 type MainTableProps = {
 	rows: TableRow[];
 	deleteRow: (index: number) => void;
-	income?: number; 
+	income?: number;
 };
 
 export default function MainTable({ rows, deleteRow, income }: MainTableProps) {
-	const totalSpent = rows.reduce((s, r) => s + (r.amount || 0), 0);
-	const remaining = (typeof income === "number" ? income : 0) - totalSpent;
-
 	return (
 		<View style={{ width: "100%" }}>
 			{typeof income === "number" && (
-				<View
-					style={{
-						padding: 8,
-						marginBottom: 8,
-						backgroundColor: "#fafafa",
-						borderRadius: 6,
-					}}
-				>
-					<Text style={{ fontWeight: "bold" }}>Kuukausitulo: {income} €</Text>
-					<Text style={{ color: remaining < 0 ? "red" : "green" }}>
-						Jäljellä: {remaining} €
-					</Text>
-					<Text style={{ color: "#666" }}>Käytetty: {totalSpent} €</Text>
-				</View>
+				<BudgetSummary rows={rows} income={income} />
 			)}
 
 			<View
@@ -48,6 +26,7 @@ export default function MainTable({ rows, deleteRow, income }: MainTableProps) {
 				<Text style={{ flex: 1, fontWeight: "bold" }}>Tyyppi</Text>
 				<Text style={{ width: 60 }} />
 			</View>
+
 			<FlatList
 				data={rows}
 				keyExtractor={(_, idx) => idx.toString()}

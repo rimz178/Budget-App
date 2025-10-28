@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button, Text, TextInput, View } from "react-native";
-import MainTable, { type TableRow } from "../components/MainTable";
+import MainTable from "../components/MainTable";
+import type { TableRow } from "../components/types";
 import { styles } from "../Styles/MainStyles";
 
 export default function MainScreen() {
@@ -26,7 +27,7 @@ export default function MainScreen() {
 			...prev,
 			{
 				title,
-				amount: Number(amount),
+				amount: Math.abs(Number(amount)),
 				info,
 				date: new Date().toISOString().slice(0, 10),
 				type,
@@ -44,7 +45,6 @@ export default function MainScreen() {
 
 	const incomeNumber = Number(monthlyIncome || 0);
 
-	// UI
 	if (!budgetCreated) {
 		return (
 			<View style={styles.container}>
