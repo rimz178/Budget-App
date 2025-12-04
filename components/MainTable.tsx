@@ -26,10 +26,16 @@ export default function MainTable({ rows, deleteRow, income }: MainTableProps) {
 				<View>
 					<CalendarView onDateChange={(date) => setSelectedDate(date)} />
 
+					{selectedDate && (
+						<Button
+							title="Näytä kaikki"
+							onPress={() => setSelectedDate(null)}
+						/>
+					)}
+
 					{typeof income === "number" && (
 						<BudgetSummary rows={filteredRows} income={income} />
 					)}
-
 					<View
 						style={{
 							flexDirection: "row",
@@ -60,9 +66,11 @@ export default function MainTable({ rows, deleteRow, income }: MainTableProps) {
 							color: item.type === "meno" ? "red" : "green",
 						}}
 					>
-						{item.type === "meno" ? "Meno" : "Tulo"}
+						{item.type === "meno" ? "Meno" : item.type === "tulo" ? "Tulo" : ""}
 					</Text>
-					<Button title="Poista" onPress={() => deleteRow(index)} />
+					{(item.title || item.amount || item.info) && (
+						<Button title="Poista" onPress={() => deleteRow(index)} />
+					)}
 				</View>
 			)}
 			ListEmptyComponent={
