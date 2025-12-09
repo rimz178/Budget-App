@@ -51,7 +51,9 @@ export default function MainTable({ rows, deleteRow, income }: MainTableProps) {
 			}
 			renderItem={({ item, index }) => (
 				<View style={styles.listItemContainer}>
-					<Text style={{ flex: 1 }}>{item.date}</Text>
+					<Text style={{ flex: 1 }}>
+						{item.date ? new Date(item.date).toLocaleDateString("fi-FI") : ""}
+					</Text>
 					<Text style={{ flex: 1 }}>{item.title}</Text>
 					<Text style={{ flex: 1 }}>
 						{item.amount ? `${item.amount} €` : ""}
