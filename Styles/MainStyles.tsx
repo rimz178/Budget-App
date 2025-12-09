@@ -29,6 +29,26 @@ export const styles = StyleSheet.create({
 	title: {
 		marginTop: 20,
 		fontWeight: "bold",
+		fontSize: 18,
+	},
+	infoText: {
+		marginTop: 12,
+		color: "#666",
+		textAlign: "center",
+	},
+	row: {
+		flexDirection: "row",
+		alignItems: "center",
+		marginBottom: 12,
+	},
+	tableContainer: {
+		maxHeight: 350,
+		width: "100%",
+	},
+	emptyText: {
+		textAlign: "center",
+		marginVertical: 16,
+		color: "#666",
 	},
 	listItemContainer: {
 		flexDirection: "row",

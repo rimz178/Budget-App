@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button, FlatList, Text, View } from "react-native";
 import { styles } from "../Styles/MainStyles";
 import BudgetSummary from "./BudgetSummary";
-import CalendarView from "./CalendarView";
 import type { TableRow } from "./types";
 
 type MainTableProps = {
@@ -24,8 +23,6 @@ export default function MainTable({ rows, deleteRow, income }: MainTableProps) {
 			keyExtractor={(_, idx) => idx.toString()}
 			ListHeaderComponent={
 				<View>
-					<CalendarView onDateChange={(date) => setSelectedDate(date)} />
-
 					{selectedDate && (
 						<Button
 							title="Näytä kaikki"

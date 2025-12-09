@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { Button, Text, TextInput, View } from "react-native";
+import AddTransactionModal from "../components/AddTransactionModal";
 import MainTable from "../components/MainTable";
 import type { TableRow } from "../components/types";
 import { styles } from "../Styles/MainStyles";
@@ -10,10 +11,7 @@ export default function MainScreen() {
 	const [budgetName, setBudgetName] = useState("");
 	const [monthlyIncome, setMonthlyIncome] = useState("");
 	const [rows, setRows] = useState<TableRow[]>([]);
-	const [title, setTitle] = useState("");
-	const [amount, setAmount] = useState("");
-	const [info, setInfo] = useState("");
-	const [type, setType] = useState<"tulo" | "meno">("tulo");
+	const [modalVisible, setModalVisible] = useState(false);
 
 	useEffect(() => {
 		const loadData = async () => {
@@ -60,23 +58,10 @@ export default function MainScreen() {
 		storeData(newRows, budgetName, monthlyIncome, true);
 	};
 
-	const handleAdd = () => {
-		if (!title.trim() || !amount.trim()) return;
-		const newRow: TableRow = {
-			title,
-			amount: Math.abs(Number(amount)),
-			info,
-			date: new Date().toISOString().slice(0, 10),
-			type,
-		};
+	const handleAddTransaction = (newRow: TableRow) => {
 		const newRows = [...rows, newRow];
 		setRows(newRows);
 		storeData(newRows, budgetName, monthlyIncome, true);
-
-		setTitle("");
-		setAmount("");
-		setInfo("");
-		setType("tulo");
 	};
 
 	const deleteRow = (index: number) => {
@@ -105,7 +90,7 @@ export default function MainScreen() {
 					keyboardType="numeric"
 				/>
 				<Button title="Luo budjetti" onPress={handleCreateBudget} />
-				<Text style={{ marginTop: 12, color: "#666" }}>
+				<Text style={styles.infoText}>
 					Budjetin luomisen jälkeen voit lisätä tuloja ja menoja.
 				</Text>
 			</View>
@@ -116,48 +101,27 @@ export default function MainScreen() {
 		<View style={styles.container}>
 			<Text style={styles.title}>{budgetName || "Budjetti"}</Text>
 
-			<Text style={styles.title}>Lisää tulo tai meno</Text>
-			<TextInput
-				style={styles.input}
-				value={title}
-				onChangeText={setTitle}
-				placeholder="Nimi"
+			<Button
+				title="Lisää tulo tai meno"
+				onPress={() => setModalVisible(true)}
 			/>
-			<TextInput
-				style={styles.input}
-				value={amount}
-				onChangeText={setAmount}
-				placeholder="Summa"
-				keyboardType="numeric"
-			/>
-			<TextInput
-				style={styles.input}
-				value={info}
-				onChangeText={setInfo}
-				placeholder="Lisätietoa"
-			/>
-			<View
-				style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}
-			>
-				<Text style={{ marginRight: 8 }}>Tyyppi:</Text>
-				<Button
-					title={type === "tulo" ? "Tulo" : "Meno"}
-					onPress={() => setType(type === "tulo" ? "meno" : "tulo")}
-					color={type === "tulo" ? "green" : "red"}
-				/>
-			</View>
-			<Button title="Lisää" onPress={handleAdd} />
 
 			<Text style={styles.title}>Kuukauden tapahtumat</Text>
-			<View style={{ maxHeight: 350, width: "100%" }}>
+			<View style={styles.tableContainer}>
 				{rows.length === 0 ? (
-					<Text style={{ color: "#666" }}>
+					<Text style={styles.emptyText}>
 						Ei tapahtumia — lisää ensimmäinen yllä.
 					</Text>
 				) : (
 					<MainTable rows={rows} deleteRow={deleteRow} income={incomeNumber} />
 				)}
 			</View>
+
+			<AddTransactionModal
+				visible={modalVisible}
+				onClose={() => setModalVisible(false)}
+				onAdd={handleAddTransaction}
+			/>
 		</View>
 	);
 }
