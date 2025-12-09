@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
 	Button,
 	Modal,
@@ -8,6 +8,7 @@ import {
 	View,
 } from "react-native";
 import { styles } from "../Styles/TransactionStyles";
+import CalendarView from "./CalendarView";
 import type { TableRow } from "./types";
 
 type AddTransactionModalProps = {
@@ -25,14 +26,15 @@ export default function AddTransactionModal({
 	const [amount, setAmount] = useState("");
 	const [info, setInfo] = useState("");
 	const [type, setType] = useState<"tulo" | "meno">("tulo");
+	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
 	const handleAdd = () => {
-		if (!title.trim() || !amount.trim()) return;
+		if (!title.trim() || !amount.trim() || !selectedDate) return;
 		const newRow: TableRow = {
 			title,
 			amount: Math.abs(Number(amount)),
 			info,
-			date: new Date().toISOString().slice(0, 10),
+			date: selectedDate.toISOString().slice(0, 10),
 			type,
 		};
 		onAdd(newRow);
@@ -40,6 +42,7 @@ export default function AddTransactionModal({
 		setAmount("");
 		setInfo("");
 		setType("tulo");
+		setSelectedDate(null);
 		onClose();
 	};
 
@@ -80,6 +83,12 @@ export default function AddTransactionModal({
 							color={type === "tulo" ? "green" : "red"}
 						/>
 					</View>
+					<CalendarView onDateChange={(date) => setSelectedDate(date)} />
+					{selectedDate && (
+						<Text style={styles.label}>
+							Valittu päivämäärä: {selectedDate.toLocaleDateString("fi-FI")}
+						</Text>
+					)}
 					<View style={styles.buttonRow}>
 						<TouchableOpacity
 							style={[styles.button, styles.cancelButton]}
