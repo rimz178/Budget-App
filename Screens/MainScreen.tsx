@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button, Text, View } from "react-native";
 import AddTransactionModal from "../components/AddTransactionModal";
 import MainTable from "../components/MainTable";
-import MonthSelector from "../components/MontSelector";
+import MonthSelector from "../components/MonthSelector";
 import SetIncomeModal from "../components/SetIncomeModal";
 import { useBudget } from "../contexts/BudgetContext";
 import { styles } from "../Styles/MainStyles";
@@ -19,20 +19,18 @@ export default function MainScreen() {
 	const [incomeModalVisible, setIncomeModalVisible] = useState(false);
 	const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
 
-	// Päivitetään kuukausitulo valitun kuukauden mukaan
 	const incomeForSelectedMonth = selectedMonth
 		? monthlyIncomes.find((mi) => mi.month === selectedMonth)?.income || 0
 		: 0;
 
-	// Suodatetaan tapahtumat valitun kuukauden mukaan
 	const filteredRows = selectedMonth
 		? rows.filter((row) => row.date?.startsWith(selectedMonth))
 		: rows;
 
 	const handleSaveIncome = (month: string, income: number) => {
 		saveIncome(month, income);
-		setSelectedMonth(month); // Asetetaan valittu kuukausi
-		setIncomeModalVisible(false); // Suljetaan modal
+		setSelectedMonth(month);
+		setIncomeModalVisible(false);
 	};
 
 	return (
@@ -89,8 +87,8 @@ export default function MainScreen() {
 				visible={incomeModalVisible}
 				onClose={() => setIncomeModalVisible(false)}
 				onSave={handleSaveIncome}
-				initialMonth={selectedMonth || undefined} 
-				initialIncome={incomeForSelectedMonth} 
+				initialMonth={selectedMonth || undefined}
+				initialIncome={incomeForSelectedMonth}
 			/>
 		</View>
 	);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	Button,
 	KeyboardAvoidingView,
@@ -9,7 +9,7 @@ import {
 	View,
 } from "react-native";
 import { styles } from "../Styles/SetIncomeModalStyles";
-import MontSelector from "./MontSelector";
+import MonthSelector from "./MonthSelector";
 
 type SetIncomeModalProps = {
 	visible: boolean;
@@ -33,6 +33,11 @@ export default function SetIncomeModal({
 		initialIncome ? String(initialIncome) : "",
 	);
 
+	useEffect(() => {
+		setSelectedMonth(initialMonth || null);
+		setIncome(initialIncome ? String(initialIncome) : "");
+	}, [initialMonth, initialIncome]);
+
 	const handleSave = () => {
 		if (!selectedMonth || !income.trim()) return;
 		onSave(selectedMonth, Number(income));
@@ -54,8 +59,7 @@ export default function SetIncomeModal({
 			>
 				<View style={styles.modalContent}>
 					<Text style={styles.title}>Aseta kuukausitulot</Text>
-					{/* Kuukauden valinta MontSelectorilla */}
-					<MontSelector
+					<MonthSelector
 						onMonthChange={(month) => setSelectedMonth(month)}
 						initialMonth={selectedMonth || undefined}
 					/>

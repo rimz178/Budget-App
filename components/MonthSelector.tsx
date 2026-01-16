@@ -11,7 +11,7 @@ export default function MonthSelector({
 	initialMonth,
 }: MonthSelectorProps) {
 	const [currentMonth, setCurrentMonth] = useState<string>(
-		initialMonth || new Date().toISOString().slice(0, 7), // Oletus: nykyinen kuukausi
+		initialMonth || new Date().toISOString().slice(0, 7),
 	);
 
 	useEffect(() => {

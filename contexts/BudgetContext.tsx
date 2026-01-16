@@ -61,13 +61,33 @@ export const BudgetProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	};
 
+	const addTransaction = (row: TableRow) => {
+		const updatedRows = [...rows, row];
+		setRows(updatedRows);
+		storeData(updatedRows, monthlyIncomes);
+	};
+
 	const saveIncome = (month: string, income: number) => {
-		const updatedIncomes = [
-			...monthlyIncomes.filter((mi) => mi.month !== month),
-			{ month, income },
-		];
+		const existingIncomeIndex = monthlyIncomes.findIndex(
+			(mi) => mi.month === month,
+		);
+
+		let updatedIncomes: MonthlyIncome[];
+		if (existingIncomeIndex !== -1) {
+			updatedIncomes = [...monthlyIncomes];
+			updatedIncomes[existingIncomeIndex].income = income;
+		} else {
+			updatedIncomes = [...monthlyIncomes, { month, income }];
+		}
+
 		setMonthlyIncomes(updatedIncomes);
 		storeData(rows, updatedIncomes);
+	};
+
+	const deleteTransaction = (index: number) => {
+		const updatedRows = rows.filter((_, idx) => idx !== index);
+		setRows(updatedRows);
+		storeData(updatedRows, monthlyIncomes);
 	};
 
 	return (
@@ -75,17 +95,9 @@ export const BudgetProvider = ({ children }: { children: React.ReactNode }) => {
 			value={{
 				rows,
 				monthlyIncomes,
-				addTransaction: (row) => {
-					const updatedRows = [...rows, row];
-					setRows(updatedRows);
-					storeData(updatedRows, monthlyIncomes);
-				},
+				addTransaction,
 				saveIncome,
-				deleteTransaction: (index) => {
-					const updatedRows = rows.filter((_, idx) => idx !== index);
-					setRows(updatedRows);
-					storeData(updatedRows, monthlyIncomes);
-				},
+				deleteTransaction,
 			}}
 		>
 			{children}
