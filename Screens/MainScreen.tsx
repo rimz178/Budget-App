@@ -36,7 +36,6 @@ export default function MainScreen() {
 		setIncomeModalVisible(false);
 	};
 
-	
 	const handleAddTransaction = (row: Omit<TableRow, "id">) => {
 		const newRow: TableRow = {
 			...row,

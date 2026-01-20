@@ -26,11 +26,7 @@ export default function SetIncomeModal({
 	initialMonth,
 	initialIncome,
 }: SetIncomeModalProps) {
-	// ennen: const getCurrentMonth = () => new Date().toISOString().slice(0, 7);
-	const currentMonth = useMemo(
-		() => new Date().toISOString().slice(0, 7),
-		[],
-	);
+	const currentMonth = useMemo(() => new Date().toISOString().slice(0, 7), []);
 
 	const [selectedMonth, setSelectedMonth] = useState<string | null>(
 		initialMonth ?? currentMonth,
@@ -76,10 +72,10 @@ export default function SetIncomeModal({
 					{selectedMonth && (
 						<Text style={styles.infoText}>
 							Valittu kuukausi:{" "}
-					 	{new Date(`${selectedMonth}-01`).toLocaleDateString("fi-FI", {
+							{new Date(`${selectedMonth}-01`).toLocaleDateString("fi-FI", {
 								year: "numeric",
 								month: "long",
-						})}
+							})}
 						</Text>
 					)}
 					<TextInput

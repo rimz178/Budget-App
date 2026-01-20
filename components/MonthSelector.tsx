@@ -41,9 +41,9 @@ export default function MonthSelector({
 			<Button title="<" onPress={handlePreviousMonth} />
 			<Text style={{ marginHorizontal: 10 }}>
 				{new Date(`${currentMonth}-01`).toLocaleDateString("fi-FI", {
-						year: "numeric",
-						month: "long",
-					})}
+					year: "numeric",
+					month: "long",
+				})}
 			</Text>
 			<Button title=">" onPress={handleNextMonth} />
 		</View>

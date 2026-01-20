@@ -6,7 +6,6 @@ import type { TableRow } from "./types";
 
 type MainTableProps = {
 	rows: TableRow[];
-	// ennen: deleteRow: (index: number) => void;
 	deleteRow: (id: string) => void;
 	income?: number;
 };

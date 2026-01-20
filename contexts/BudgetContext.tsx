@@ -8,11 +8,11 @@ type MonthlyIncome = {
 };
 
 type BudgetContextType = {
-    rows: TableRow[];
-    monthlyIncomes: MonthlyIncome[];
-    addTransaction: (row: Omit<TableRow, "id">) => void;
-    saveIncome: (month: string, income: number) => void;
-    deleteTransaction: (id: string) => void;
+	rows: TableRow[];
+	monthlyIncomes: MonthlyIncome[];
+	addTransaction: (row: Omit<TableRow, "id">) => void;
+	saveIncome: (month: string, income: number) => void;
+	deleteTransaction: (id: string) => void;
 };
 
 const BudgetContext = createContext<BudgetContextType | undefined>(undefined);
@@ -63,12 +63,10 @@ export const BudgetProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	};
 
-	// Migraatio: lisää id puuttuviin riveihin
 	useEffect(() => {
 		setRows((prev) => prev.map((r) => (r.id ? r : { ...r, id: genId() })));
 	}, []);
 
-	// Lisää id uudelle riville
 	const addTransaction = (row: Omit<TableRow, "id">) => {
 		const updatedRows = [...rows, { ...row, id: genId() }];
 		setRows(updatedRows);
