@@ -6,7 +6,8 @@ import type { TableRow } from "./types";
 
 type MainTableProps = {
 	rows: TableRow[];
-	deleteRow: (index: number) => void;
+	// ennen: deleteRow: (index: number) => void;
+	deleteRow: (id: string) => void;
 	income?: number;
 };
 
@@ -20,7 +21,9 @@ export default function MainTable({ rows, deleteRow, income }: MainTableProps) {
 	return (
 		<FlatList
 			data={filteredRows}
-			keyExtractor={(_, idx) => idx.toString()}
+			keyExtractor={(item, idx) =>
+				item.id ?? `row-${item.date ?? ""}-${item.title ?? ""}-${idx}`
+			}
 			ListHeaderComponent={
 				<View>
 					{selectedDate && (
@@ -49,7 +52,7 @@ export default function MainTable({ rows, deleteRow, income }: MainTableProps) {
 					</View>
 				</View>
 			}
-			renderItem={({ item, index }) => (
+			renderItem={({ item }) => (
 				<View style={styles.listItemContainer}>
 					<Text style={{ flex: 1 }}>
 						{item.date ? new Date(item.date).toLocaleDateString("fi-FI") : ""}
@@ -68,7 +71,7 @@ export default function MainTable({ rows, deleteRow, income }: MainTableProps) {
 						{item.type === "meno" ? "Meno" : item.type === "tulo" ? "Tulo" : ""}
 					</Text>
 					{(item.title || item.amount || item.info) && (
-						<Button title="Poista" onPress={() => deleteRow(index)} />
+						<Button title="Poista" onPress={() => deleteRow(item.id)} />
 					)}
 				</View>
 			)}

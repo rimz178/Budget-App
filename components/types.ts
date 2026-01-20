@@ -1,4 +1,5 @@
 export type TableRow = {
+	id: string;
 	title: string;
 	amount: number;
 	info?: string;

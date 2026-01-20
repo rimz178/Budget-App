@@ -8,11 +8,11 @@ type MonthlyIncome = {
 };
 
 type BudgetContextType = {
-	rows: TableRow[];
-	monthlyIncomes: MonthlyIncome[];
-	addTransaction: (row: TableRow) => void;
-	saveIncome: (month: string, income: number) => void;
-	deleteTransaction: (index: number) => void;
+    rows: TableRow[];
+    monthlyIncomes: MonthlyIncome[];
+    addTransaction: (row: Omit<TableRow, "id">) => void;
+    saveIncome: (month: string, income: number) => void;
+    deleteTransaction: (id: string) => void;
 };
 
 const BudgetContext = createContext<BudgetContextType | undefined>(undefined);
@@ -24,6 +24,8 @@ export const useBudget = () => {
 	}
 	return context;
 };
+
+const genId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 export const BudgetProvider = ({ children }: { children: React.ReactNode }) => {
 	const [rows, setRows] = useState<TableRow[]>([]);
@@ -61,8 +63,14 @@ export const BudgetProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	};
 
-	const addTransaction = (row: TableRow) => {
-		const updatedRows = [...rows, row];
+	// Migraatio: lisää id puuttuviin riveihin
+	useEffect(() => {
+		setRows((prev) => prev.map((r) => (r.id ? r : { ...r, id: genId() })));
+	}, []);
+
+	// Lisää id uudelle riville
+	const addTransaction = (row: Omit<TableRow, "id">) => {
+		const updatedRows = [...rows, { ...row, id: genId() }];
 		setRows(updatedRows);
 		storeData(updatedRows, monthlyIncomes);
 	};
@@ -84,8 +92,9 @@ export const BudgetProvider = ({ children }: { children: React.ReactNode }) => {
 		storeData(rows, updatedIncomes);
 	};
 
-	const deleteTransaction = (index: number) => {
-		const updatedRows = rows.filter((_, idx) => idx !== index);
+	// Poista id:n perusteella
+	const deleteTransaction = (id: string) => {
+		const updatedRows = rows.filter((r) => r.id !== id);
 		setRows(updatedRows);
 		storeData(updatedRows, monthlyIncomes);
 	};

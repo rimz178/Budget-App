@@ -14,7 +14,8 @@ import type { TableRow } from "./types";
 type AddTransactionModalProps = {
 	visible: boolean;
 	onClose: () => void;
-	onAdd: (row: TableRow) => void;
+	// ennen: onAdd: (row: TableRow) => void;
+	onAdd: (row: Omit<TableRow, "id">) => void;
 };
 
 export default function AddTransactionModal({
@@ -30,11 +31,11 @@ export default function AddTransactionModal({
 
 	const handleAdd = () => {
 		if (!title.trim() || !amount.trim() || !selectedDate) return;
-		// Salli pilkku desimaalierottimena
-		const parsed = Number(amount.replace(",", "."));
-		if (Number.isNaN(parsed)) return;
+		const sanitized = amount.replace(/\s/g, "").replace(",", ".");
+		const parsed = Number(sanitized);
+		if (!Number.isFinite(parsed) || parsed <= 0) return;
 
-		const newRow: TableRow = {
+		const newRow: Omit<TableRow, "id"> = {
 			title,
 			amount: Math.abs(parsed),
 			info,

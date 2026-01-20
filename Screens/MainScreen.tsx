@@ -36,8 +36,13 @@ export default function MainScreen() {
 		setIncomeModalVisible(false);
 	};
 
-	const handleAddTransaction = (row: TableRow) => {
-		addTransaction(row);
+	// addTransaction odottaa nyt Omit<TableRow, "id">, joten päivitä handleAddTransaction:
+	const handleAddTransaction = (row: Omit<TableRow, "id">) => {
+		const newRow: TableRow = {
+			...row,
+			id: Date.now().toString(),
+		};
+		addTransaction(newRow);
 
 		setSelectedMonth(row.date ? row.date.slice(0, 7) : null);
 	};

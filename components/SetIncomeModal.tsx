@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
 	Button,
 	KeyboardAvoidingView,
@@ -26,19 +26,23 @@ export default function SetIncomeModal({
 	initialMonth,
 	initialIncome,
 }: SetIncomeModalProps) {
-	const getCurrentMonth = () => new Date().toISOString().slice(0, 7);
+	// ennen: const getCurrentMonth = () => new Date().toISOString().slice(0, 7);
+	const currentMonth = useMemo(
+		() => new Date().toISOString().slice(0, 7),
+		[],
+	);
 
 	const [selectedMonth, setSelectedMonth] = useState<string | null>(
-		initialMonth ?? getCurrentMonth(),
+		initialMonth ?? currentMonth,
 	);
 	const [income, setIncome] = useState<string>(
 		initialIncome ? String(initialIncome) : "",
 	);
 
 	useEffect(() => {
-		setSelectedMonth(initialMonth ?? getCurrentMonth());
+		setSelectedMonth(initialMonth ?? currentMonth);
 		setIncome(initialIncome ? String(initialIncome) : "");
-	}, [initialMonth, initialIncome]);
+	}, [initialMonth, initialIncome, currentMonth]);
 
 	const handleSave = () => {
 		if (!selectedMonth) return;
