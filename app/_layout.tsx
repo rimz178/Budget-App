@@ -8,12 +8,13 @@ export default function RootLayout() {
 			<Tabs
 				screenOptions={({ route }) => ({
 					tabBarIcon: ({ color, size }) => {
-						let iconName: keyof typeof Ionicons.glyphMap = "home";
-
+						let iconName: keyof typeof Ionicons.glyphMap;
 						if (route.name === "index") {
 							iconName = "home";
 						} else if (route.name === "Settings") {
 							iconName = "settings";
+						} else {
+							iconName = "home";
 						}
 						return <Ionicons name={iconName} size={size} color={color} />;
 					},

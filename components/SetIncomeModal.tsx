@@ -41,9 +41,13 @@ export default function SetIncomeModal({
 	}, [initialMonth, initialIncome]);
 
 	const handleSave = () => {
-		if (!selectedMonth || !income.trim()) return;
-		onSave(selectedMonth, Number(income));
-		setSelectedMonth(null);
+		if (!selectedMonth) return;
+		const sanitized = income.replace(/\s/g, "").replace(",", ".");
+		const parsedIncome = Number(sanitized);
+		if (!Number.isFinite(parsedIncome) || parsedIncome <= 0) {
+			return;
+		}
+		onSave(selectedMonth, parsedIncome);
 		setIncome("");
 		onClose();
 	};
