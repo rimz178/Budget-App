@@ -76,10 +76,10 @@ export default function SetIncomeModal({
 					{selectedMonth && (
 						<Text style={styles.infoText}>
 							Valittu kuukausi:{" "}
-							{new Date(selectedMonth).toLocaleDateString("fi-FI", {
+					 	{new Date(`${selectedMonth}-01`).toLocaleDateString("fi-FI", {
 								year: "numeric",
 								month: "long",
-							})}
+						})}
 						</Text>
 					)}
 					<TextInput

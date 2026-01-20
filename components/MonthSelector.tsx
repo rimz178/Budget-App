@@ -21,7 +21,7 @@ export default function MonthSelector({
 	}, [initialMonth]);
 
 	const handlePreviousMonth = () => {
-		const date = new Date(currentMonth);
+		const date = new Date(`${currentMonth}-01`);
 		date.setMonth(date.getMonth() - 1);
 		const newMonth = date.toISOString().slice(0, 7);
 		setCurrentMonth(newMonth);
@@ -29,7 +29,7 @@ export default function MonthSelector({
 	};
 
 	const handleNextMonth = () => {
-		const date = new Date(currentMonth);
+		const date = new Date(`${currentMonth}-01`);
 		date.setMonth(date.getMonth() + 1);
 		const newMonth = date.toISOString().slice(0, 7);
 		setCurrentMonth(newMonth);
@@ -40,10 +40,10 @@ export default function MonthSelector({
 		<View style={{ flexDirection: "row", alignItems: "center" }}>
 			<Button title="<" onPress={handlePreviousMonth} />
 			<Text style={{ marginHorizontal: 10 }}>
-				{new Date(currentMonth).toLocaleDateString("fi-FI", {
-					year: "numeric",
-					month: "long",
-				})}
+				{new Date(`${currentMonth}-01`).toLocaleDateString("fi-FI", {
+						year: "numeric",
+						month: "long",
+					})}
 			</Text>
 			<Button title=">" onPress={handleNextMonth} />
 		</View>
