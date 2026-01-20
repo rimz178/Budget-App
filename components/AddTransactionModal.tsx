@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
 	Button,
 	Modal,
+	Pressable,
 	Text,
 	TextInput,
 	TouchableOpacity,
@@ -14,7 +15,6 @@ import type { TableRow } from "./types";
 type AddTransactionModalProps = {
 	visible: boolean;
 	onClose: () => void;
-	// ennen: onAdd: (row: TableRow) => void;
 	onAdd: (row: Omit<TableRow, "id">) => void;
 };
 
@@ -28,6 +28,12 @@ export default function AddTransactionModal({
 	const [info, setInfo] = useState("");
 	const [type, setType] = useState<"tulo" | "meno">("tulo");
 	const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+	const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+
+	const handleClose = () => {
+		setIsDatePickerOpen(false);
+		onClose();
+	};
 
 	const handleAdd = () => {
 		if (!title.trim() || !amount.trim() || !selectedDate) return;
@@ -42,31 +48,38 @@ export default function AddTransactionModal({
 			date: selectedDate.toISOString().slice(0, 10),
 			type,
 		};
+
 		onAdd(newRow);
 		setTitle("");
 		setAmount("");
 		setInfo("");
 		setType("tulo");
 		setSelectedDate(new Date());
-		onClose();
+		handleClose();
 	};
+
+	const dateLabel = selectedDate
+		? selectedDate.toLocaleDateString("fi-FI")
+		: "Valitse päivämäärä";
 
 	return (
 		<Modal
 			animationType="slide"
 			transparent={true}
 			visible={visible}
-			onRequestClose={onClose}
+			onRequestClose={handleClose}
 		>
 			<View style={styles.modalContainer}>
 				<View style={styles.modalContent}>
 					<Text style={styles.title}>Lisää tulo tai meno</Text>
+
 					<TextInput
 						style={styles.input}
 						value={title}
 						onChangeText={setTitle}
 						placeholder="Nimi"
 					/>
+
 					<TextInput
 						style={styles.input}
 						value={amount}
@@ -74,12 +87,14 @@ export default function AddTransactionModal({
 						placeholder="Summa"
 						keyboardType="numeric"
 					/>
+
 					<TextInput
 						style={styles.input}
 						value={info}
 						onChangeText={setInfo}
 						placeholder="Lisätietoa"
 					/>
+
 					<View style={styles.row}>
 						<Text style={styles.label}>Tyyppi:</Text>
 						<Button
@@ -88,16 +103,25 @@ export default function AddTransactionModal({
 							color={type === "tulo" ? "green" : "red"}
 						/>
 					</View>
-					<CalendarView onDateChange={(date) => setSelectedDate(date)} />
-					{selectedDate && (
-						<Text style={styles.label}>
-							Valittu päivämäärä: {selectedDate.toLocaleDateString("fi-FI")}
+
+					<TouchableOpacity
+						style={styles.datePickerButton}
+						onPress={() => setIsDatePickerOpen(true)}
+					>
+						<Text
+							style={[
+								styles.datePickerText,
+								!selectedDate && styles.datePickerPlaceholder,
+							]}
+						>
+							{dateLabel}
 						</Text>
-					)}
+					</TouchableOpacity>
+
 					<View style={styles.buttonRow}>
 						<TouchableOpacity
 							style={[styles.button, styles.cancelButton]}
-							onPress={onClose}
+							onPress={handleClose}
 						>
 							<Text style={styles.buttonText}>Peruuta</Text>
 						</TouchableOpacity>
@@ -109,6 +133,36 @@ export default function AddTransactionModal({
 						</TouchableOpacity>
 					</View>
 				</View>
+
+				<Modal
+					animationType="fade"
+					transparent={true}
+					visible={isDatePickerOpen}
+					onRequestClose={() => setIsDatePickerOpen(false)}
+				>
+					<View style={styles.modalContainer}>
+						<Pressable
+							style={styles.backdrop}
+							onPress={() => setIsDatePickerOpen(false)}
+						/>
+						<View style={styles.smallModalContent}>
+							<CalendarView
+								value={selectedDate}
+								hideSelectedText={true}
+								onDateChange={(date) => {
+									setSelectedDate(date);
+									setIsDatePickerOpen(false);
+								}}
+							/>
+							<View style={styles.dateModalButtonRow}>
+								<Button
+									title="Sulje"
+									onPress={() => setIsDatePickerOpen(false)}
+								/>
+							</View>
+						</View>
+					</View>
+				</Modal>
 			</View>
 		</Modal>
 	);
