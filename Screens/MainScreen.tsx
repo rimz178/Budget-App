@@ -1,163 +1,108 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
-import { Button, Text, TextInput, View } from "react-native";
+import { useState } from "react";
+import { Button, Text, View } from "react-native";
+import AddTransactionModal from "../components/AddTransactionModal";
 import MainTable from "../components/MainTable";
+import MonthSelector from "../components/MonthSelector";
+import SetIncomeModal from "../components/SetIncomeModal";
 import type { TableRow } from "../components/types";
+import { useBudget } from "../contexts/BudgetContext";
 import { styles } from "../Styles/MainStyles";
 
 export default function MainScreen() {
-	const [budgetCreated, setBudgetCreated] = useState(false);
-	const [budgetName, setBudgetName] = useState("");
-	const [monthlyIncome, setMonthlyIncome] = useState("");
-	const [rows, setRows] = useState<TableRow[]>([]);
-	const [title, setTitle] = useState("");
-	const [amount, setAmount] = useState("");
-	const [info, setInfo] = useState("");
-	const [type, setType] = useState<"tulo" | "meno">("tulo");
+	const {
+		rows,
+		monthlyIncomes,
+		addTransaction,
+		saveIncome,
+		deleteTransaction,
+	} = useBudget();
+	const [modalVisible, setModalVisible] = useState(false);
+	const [incomeModalVisible, setIncomeModalVisible] = useState(false);
+	const [selectedMonth, setSelectedMonth] = useState<string | null>(
+		new Date().toISOString().slice(0, 7),
+	);
 
-	useEffect(() => {
-		const loadData = async () => {
-			try {
-				const json = await AsyncStorage.getItem("@budget_data");
-				if (!json) return;
-				const parsed = JSON.parse(json);
-				if (parsed.budgetName) setBudgetName(parsed.budgetName);
-				if (parsed.monthlyIncome)
-					setMonthlyIncome(String(parsed.monthlyIncome));
-				if (Array.isArray(parsed.rows)) setRows(parsed.rows);
-				if (parsed.budgetCreated) setBudgetCreated(true);
-			} catch (e) {
-				console.error("Error loading data", e);
-			}
-		};
-		loadData();
-	}, []);
+	const incomeForSelectedMonth = selectedMonth
+		? monthlyIncomes.find((mi) => mi.month === selectedMonth)?.income || 0
+		: 0;
 
-	const storeData = async (
-		nextRows: TableRow[],
-		nextBudgetName = budgetName,
-		nextMonthlyIncome = monthlyIncome,
-		nextBudgetCreated = budgetCreated,
-	) => {
-		try {
-			const jsonValue = JSON.stringify({
-				budgetName: nextBudgetName,
-				monthlyIncome: nextMonthlyIncome,
-				rows: nextRows,
-				budgetCreated: nextBudgetCreated,
-			});
-			await AsyncStorage.setItem("@budget_data", jsonValue);
-		} catch (e) {
-			console.error("Error saving data", e);
-		}
+	const filteredRows = selectedMonth
+		? rows.filter((row) => row.date?.startsWith(selectedMonth))
+		: rows;
+
+	const handleSaveIncome = (month: string, income: number) => {
+		saveIncome(month, income);
+		setSelectedMonth(month);
+		setIncomeModalVisible(false);
 	};
 
-	const handleCreateBudget = () => {
-		if (!monthlyIncome.trim()) return;
-		setBudgetCreated(true);
-		const newRows: TableRow[] = [];
-		setRows(newRows);
-		storeData(newRows, budgetName, monthlyIncome, true);
-	};
-
-	const handleAdd = () => {
-		if (!title.trim() || !amount.trim()) return;
+	
+	const handleAddTransaction = (row: Omit<TableRow, "id">) => {
 		const newRow: TableRow = {
-			title,
-			amount: Math.abs(Number(amount)),
-			info,
-			date: new Date().toISOString().slice(0, 10),
-			type,
+			...row,
+			id: Date.now().toString(),
 		};
-		const newRows = [...rows, newRow];
-		setRows(newRows);
-		storeData(newRows, budgetName, monthlyIncome, true);
+		addTransaction(newRow);
 
-		setTitle("");
-		setAmount("");
-		setInfo("");
-		setType("tulo");
+		setSelectedMonth(row.date ? row.date.slice(0, 7) : null);
 	};
-
-	const deleteRow = (index: number) => {
-		const newRows = rows.filter((_, idx) => idx !== index);
-		setRows(newRows);
-		storeData(newRows, budgetName, monthlyIncome, true);
-	};
-
-	const incomeNumber = Number(monthlyIncome || 0);
-
-	if (!budgetCreated) {
-		return (
-			<View style={styles.container}>
-				<Text style={styles.title}>Luo uusi budjetti</Text>
-				<TextInput
-					style={styles.input}
-					value={budgetName}
-					onChangeText={setBudgetName}
-					placeholder="Budjetin nimi (esim. Lokakuu)"
-				/>
-				<TextInput
-					style={styles.input}
-					value={monthlyIncome}
-					onChangeText={setMonthlyIncome}
-					placeholder="Kuukausitulosi (€)"
-					keyboardType="numeric"
-				/>
-				<Button title="Luo budjetti" onPress={handleCreateBudget} />
-				<Text style={{ marginTop: 12, color: "#666" }}>
-					Budjetin luomisen jälkeen voit lisätä tuloja ja menoja.
-				</Text>
-			</View>
-		);
-	}
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>{budgetName || "Budjetti"}</Text>
+			<Text style={styles.title}>Budjetti</Text>
 
-			<Text style={styles.title}>Lisää tulo tai meno</Text>
-			<TextInput
-				style={styles.input}
-				value={title}
-				onChangeText={setTitle}
-				placeholder="Nimi"
+			<MonthSelector
+				onMonthChange={(month) => setSelectedMonth(month)}
+				initialMonth={selectedMonth || undefined}
 			/>
-			<TextInput
-				style={styles.input}
-				value={amount}
-				onChangeText={setAmount}
-				placeholder="Summa"
-				keyboardType="numeric"
+			{selectedMonth && (
+				<Text style={styles.infoText}>
+					Valittu kuukausi:{" "}
+					{new Date(`${selectedMonth}-01`).toLocaleDateString("fi-FI", {
+						year: "numeric",
+						month: "long",
+					})}{" "}
+					- Tulot: {incomeForSelectedMonth} €
+				</Text>
+			)}
+
+			<Button
+				title="Aseta kuukausitulot"
+				onPress={() => setIncomeModalVisible(true)}
 			/>
-			<TextInput
-				style={styles.input}
-				value={info}
-				onChangeText={setInfo}
-				placeholder="Lisätietoa"
+			<Button
+				title="Lisää tulo tai meno"
+				onPress={() => setModalVisible(true)}
 			/>
-			<View
-				style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}
-			>
-				<Text style={{ marginRight: 8 }}>Tyyppi:</Text>
-				<Button
-					title={type === "tulo" ? "Tulo" : "Meno"}
-					onPress={() => setType(type === "tulo" ? "meno" : "tulo")}
-					color={type === "tulo" ? "green" : "red"}
-				/>
-			</View>
-			<Button title="Lisää" onPress={handleAdd} />
 
 			<Text style={styles.title}>Kuukauden tapahtumat</Text>
-			<View style={{ maxHeight: 350, width: "100%" }}>
-				{rows.length === 0 ? (
-					<Text style={{ color: "#666" }}>
+			<View style={styles.tableContainer}>
+				{filteredRows.length === 0 ? (
+					<Text style={styles.emptyText}>
 						Ei tapahtumia — lisää ensimmäinen yllä.
 					</Text>
 				) : (
-					<MainTable rows={rows} deleteRow={deleteRow} income={incomeNumber} />
+					<MainTable
+						rows={filteredRows}
+						deleteRow={deleteTransaction}
+						income={incomeForSelectedMonth}
+					/>
 				)}
 			</View>
+
+			<AddTransactionModal
+				visible={modalVisible}
+				onClose={() => setModalVisible(false)}
+				onAdd={handleAddTransaction}
+			/>
+
+			<SetIncomeModal
+				visible={incomeModalVisible}
+				onClose={() => setIncomeModalVisible(false)}
+				onSave={handleSaveIncome}
+				initialMonth={selectedMonth || undefined}
+				initialIncome={incomeForSelectedMonth}
+			/>
 		</View>
 	);
 }
