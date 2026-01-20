@@ -26,13 +26,17 @@ export default function AddTransactionModal({
 	const [amount, setAmount] = useState("");
 	const [info, setInfo] = useState("");
 	const [type, setType] = useState<"tulo" | "meno">("tulo");
-	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+	const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
 
 	const handleAdd = () => {
 		if (!title.trim() || !amount.trim() || !selectedDate) return;
+		// Salli pilkku desimaalierottimena
+		const parsed = Number(amount.replace(",", "."));
+		if (Number.isNaN(parsed)) return;
+
 		const newRow: TableRow = {
 			title,
-			amount: Math.abs(Number(amount)),
+			amount: Math.abs(parsed),
 			info,
 			date: selectedDate.toISOString().slice(0, 10),
 			type,
@@ -42,7 +46,7 @@ export default function AddTransactionModal({
 		setAmount("");
 		setInfo("");
 		setType("tulo");
-		setSelectedDate(null);
+		setSelectedDate(new Date());
 		onClose();
 	};
 

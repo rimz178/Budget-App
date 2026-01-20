@@ -26,15 +26,17 @@ export default function SetIncomeModal({
 	initialMonth,
 	initialIncome,
 }: SetIncomeModalProps) {
+	const getCurrentMonth = () => new Date().toISOString().slice(0, 7);
+
 	const [selectedMonth, setSelectedMonth] = useState<string | null>(
-		initialMonth || null,
+		initialMonth ?? getCurrentMonth(),
 	);
 	const [income, setIncome] = useState<string>(
 		initialIncome ? String(initialIncome) : "",
 	);
 
 	useEffect(() => {
-		setSelectedMonth(initialMonth || null);
+		setSelectedMonth(initialMonth ?? getCurrentMonth());
 		setIncome(initialIncome ? String(initialIncome) : "");
 	}, [initialMonth, initialIncome]);
 

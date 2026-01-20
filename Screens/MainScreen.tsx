@@ -4,6 +4,7 @@ import AddTransactionModal from "../components/AddTransactionModal";
 import MainTable from "../components/MainTable";
 import MonthSelector from "../components/MonthSelector";
 import SetIncomeModal from "../components/SetIncomeModal";
+import type { TableRow } from "../components/types";
 import { useBudget } from "../contexts/BudgetContext";
 import { styles } from "../Styles/MainStyles";
 
@@ -17,7 +18,9 @@ export default function MainScreen() {
 	} = useBudget();
 	const [modalVisible, setModalVisible] = useState(false);
 	const [incomeModalVisible, setIncomeModalVisible] = useState(false);
-	const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+	const [selectedMonth, setSelectedMonth] = useState<string | null>(
+		new Date().toISOString().slice(0, 7),
+	);
 
 	const incomeForSelectedMonth = selectedMonth
 		? monthlyIncomes.find((mi) => mi.month === selectedMonth)?.income || 0
@@ -31,6 +34,12 @@ export default function MainScreen() {
 		saveIncome(month, income);
 		setSelectedMonth(month);
 		setIncomeModalVisible(false);
+	};
+
+	const handleAddTransaction = (row: TableRow) => {
+		addTransaction(row);
+		// Näytä etusivulla lisätyn tapahtuman kuukausi
+		setSelectedMonth(row.date ? row.date.slice(0, 7) : null);
 	};
 
 	return (
@@ -80,7 +89,7 @@ export default function MainScreen() {
 			<AddTransactionModal
 				visible={modalVisible}
 				onClose={() => setModalVisible(false)}
-				onAdd={addTransaction}
+				onAdd={handleAddTransaction}
 			/>
 
 			<SetIncomeModal
