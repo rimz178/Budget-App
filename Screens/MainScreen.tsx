@@ -38,7 +38,7 @@ export default function MainScreen() {
 
 	const handleAddTransaction = (row: TableRow) => {
 		addTransaction(row);
-		// Näytä etusivulla lisätyn tapahtuman kuukausi
+
 		setSelectedMonth(row.date ? row.date.slice(0, 7) : null);
 	};
 
@@ -46,7 +46,6 @@ export default function MainScreen() {
 		<View style={styles.container}>
 			<Text style={styles.title}>Budjetti</Text>
 
-			{/* Kuukauden valinta */}
 			<MonthSelector
 				onMonthChange={(month) => setSelectedMonth(month)}
 				initialMonth={selectedMonth || undefined}
