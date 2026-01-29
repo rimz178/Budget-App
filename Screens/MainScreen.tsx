@@ -8,6 +8,11 @@ import type { TableRow } from "../components/types";
 import { useBudget } from "../contexts/BudgetContext";
 import { styles } from "../Styles/MainStyles";
 
+
+/**
+ * 	Main screen component for the budgeting app.
+ * @returns 	
+ */
 export default function MainScreen() {
 	const {
 		rows,
