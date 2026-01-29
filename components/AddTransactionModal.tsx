@@ -107,6 +107,7 @@ export default function AddTransactionModal({
 					<TouchableOpacity
 						style={styles.datePickerButton}
 						onPress={() => setIsDatePickerOpen(true)}
+						accessibilityLabel="Avaa kalenterinäkymä päivämäärän valitsemiseksi"
 					>
 						<Text
 							style={[
