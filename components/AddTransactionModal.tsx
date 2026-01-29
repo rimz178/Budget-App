@@ -63,107 +63,109 @@ export default function AddTransactionModal({
 		: "Valitse päivämäärä";
 
 	return (
-		<Modal
-			animationType="slide"
-			transparent={true}
-			visible={visible}
-			onRequestClose={handleClose}
-		>
-			<View style={styles.modalContainer}>
-				<View style={styles.modalContent}>
-					<Text style={styles.title}>Lisää tulo tai meno</Text>
+		<>
+			<Modal
+				animationType="slide"
+				transparent={true}
+				visible={visible && !isDatePickerOpen}
+				onRequestClose={handleClose}
+			>
+				<View style={styles.modalContainer}>
+					<View style={styles.modalContent}>
+						<Text style={styles.title}>Lisää tulo tai meno</Text>
 
-					<TextInput
-						style={styles.input}
-						value={title}
-						onChangeText={setTitle}
-						placeholder="Nimi"
-					/>
-
-					<TextInput
-						style={styles.input}
-						value={amount}
-						onChangeText={setAmount}
-						placeholder="Summa"
-						keyboardType="numeric"
-					/>
-
-					<TextInput
-						style={styles.input}
-						value={info}
-						onChangeText={setInfo}
-						placeholder="Lisätietoa"
-					/>
-
-					<View style={styles.row}>
-						<Text style={styles.label}>Tyyppi:</Text>
-						<Button
-							title={type === "tulo" ? "Tulo" : "Meno"}
-							onPress={() => setType(type === "tulo" ? "meno" : "tulo")}
-							color={type === "tulo" ? "green" : "red"}
+						<TextInput
+							style={styles.input}
+							value={title}
+							onChangeText={setTitle}
+							placeholder="Nimi"
 						/>
-					</View>
 
-					<TouchableOpacity
-						style={styles.datePickerButton}
-						onPress={() => setIsDatePickerOpen(true)}
-					>
-						<Text
-							style={[
-								styles.datePickerText,
-								!selectedDate && styles.datePickerPlaceholder,
-							]}
-						>
-							{dateLabel}
-						</Text>
-					</TouchableOpacity>
-
-					<View style={styles.buttonRow}>
-						<TouchableOpacity
-							style={[styles.button, styles.cancelButton]}
-							onPress={handleClose}
-						>
-							<Text style={styles.buttonText}>Peruuta</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.button, styles.addButton]}
-							onPress={handleAdd}
-						>
-							<Text style={styles.buttonText}>Lisää</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
-
-				<Modal
-					animationType="fade"
-					transparent={true}
-					visible={isDatePickerOpen}
-					onRequestClose={() => setIsDatePickerOpen(false)}
-				>
-					<View style={styles.modalContainer}>
-						<Pressable
-							style={styles.backdrop}
-							onPress={() => setIsDatePickerOpen(false)}
+						<TextInput
+							style={styles.input}
+							value={amount}
+							onChangeText={setAmount}
+							placeholder="Summa"
+							keyboardType="numeric"
 						/>
-						<View style={styles.smallModalContent}>
-							<CalendarView
-								value={selectedDate}
-								hideSelectedText={true}
-								onDateChange={(date) => {
-									setSelectedDate(date);
-									setIsDatePickerOpen(false);
-								}}
+
+						<TextInput
+							style={styles.input}
+							value={info}
+							onChangeText={setInfo}
+							placeholder="Lisätietoa"
+						/>
+
+						<View style={styles.row}>
+							<Text style={styles.label}>Tyyppi:</Text>
+							<Button
+								title={type === "tulo" ? "Tulo" : "Meno"}
+								onPress={() => setType(type === "tulo" ? "meno" : "tulo")}
+								color={type === "tulo" ? "green" : "red"}
 							/>
-							<View style={styles.dateModalButtonRow}>
-								<Button
-									title="Sulje"
-									onPress={() => setIsDatePickerOpen(false)}
-								/>
-							</View>
+						</View>
+
+						<TouchableOpacity
+							style={styles.datePickerButton}
+							onPress={() => setIsDatePickerOpen(true)}
+						>
+							<Text
+								style={[
+									styles.datePickerText,
+									!selectedDate && styles.datePickerPlaceholder,
+								]}
+							>
+								{dateLabel}
+							</Text>
+						</TouchableOpacity>
+
+						<View style={styles.buttonRow}>
+							<TouchableOpacity
+								style={[styles.button, styles.cancelButton]}
+								onPress={handleClose}
+							>
+								<Text style={styles.buttonText}>Peruuta</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={[styles.button, styles.addButton]}
+								onPress={handleAdd}
+							>
+								<Text style={styles.buttonText}>Lisää</Text>
+							</TouchableOpacity>
 						</View>
 					</View>
-				</Modal>
-			</View>
-		</Modal>
+				</View>
+			</Modal>
+
+			<Modal
+				animationType="fade"
+				transparent={true}
+				visible={visible && isDatePickerOpen}
+				onRequestClose={() => setIsDatePickerOpen(false)}
+			>
+				<View style={styles.modalContainer}>
+					<Pressable
+						style={styles.backdrop}
+						onPress={() => setIsDatePickerOpen(false)}
+					/>
+					<View style={styles.smallModalContent}>
+						<CalendarView
+							value={selectedDate}
+							hideSelectedText={true}
+							onDateChange={(date) => {
+								setSelectedDate(date);
+								setIsDatePickerOpen(false);
+							}}
+						/>
+						<View style={styles.dateModalButtonRow}>
+							<Button
+								title="Sulje"
+								onPress={() => setIsDatePickerOpen(false)}
+							/>
+						</View>
+					</View>
+				</View>
+			</Modal>
+		</>
 	);
 }
