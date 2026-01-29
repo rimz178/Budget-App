@@ -1,14 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Text, View } from "react-native";
+import { formatYYYYMM } from "../utils/dateFormatting";
 
 type MonthSelectorProps = {
 	onMonthChange: (month: string) => void;
 	initialMonth?: string;
 };
-
-const pad2 = (n: number) => String(n).padStart(2, "0");
-const formatYYYYMM = (date: Date) =>
-	`${date.getFullYear()}-${pad2(date.getMonth() + 1)}`;
 
 const parseYYYYMMToDate = (yyyyMM: string) => {
 	const [yStr, mStr] = yyyyMM.split("-");

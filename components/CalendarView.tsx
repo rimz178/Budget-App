@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { styles } from "../Styles/CalendarStyles";
+import { formatYYYYMMDD } from "../utils/dateFormatting";
 
 type CalendarViewProps = {
 	onDateChange: (date: Date) => void;
@@ -9,11 +10,6 @@ type CalendarViewProps = {
 	hideTitle?: boolean;
 	hideSelectedText?: boolean;
 };
-
-// Format date as YYYY-MM-DD using local timezone
-const pad2 = (n: number) => String(n).padStart(2, "0");
-const formatYYYYMMDD = (date: Date) =>
-	`${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
 
 export default function CalendarView({
 	onDateChange,
