@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { styles } from "../Styles/CalendarStyles";
+import { formatYYYYMMDD } from "../utils/dateFormatting";
 
 type CalendarViewProps = {
 	onDateChange: (date: Date) => void;
@@ -16,7 +17,7 @@ export default function CalendarView({
 	hideTitle,
 	hideSelectedText,
 }: CalendarViewProps) {
-	const valueString = value ? value.toISOString().slice(0, 10) : "";
+	const valueString = value ? formatYYYYMMDD(value) : "";
 	const [selectedDate, setSelectedDate] = useState<string>(valueString);
 
 	useEffect(() => {
