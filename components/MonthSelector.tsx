@@ -6,32 +6,41 @@ type MonthSelectorProps = {
 	initialMonth?: string;
 };
 
+const pad2 = (n: number) => String(n).padStart(2, "0");
+const formatYYYYMM = (date: Date) =>
+	`${date.getFullYear()}-${pad2(date.getMonth() + 1)}`;
+
+const parseYYYYMMToDate = (yyyyMM: string) => {
+	const [yStr, mStr] = yyyyMM.split("-");
+	const y = Number(yStr);
+	const m = Number(mStr);
+	return new Date(y, m - 1, 1); // paikallinen aika
+};
+
 export default function MonthSelector({
 	onMonthChange,
 	initialMonth,
 }: MonthSelectorProps) {
 	const [currentMonth, setCurrentMonth] = useState<string>(
-		initialMonth || new Date().toISOString().slice(0, 7),
+		initialMonth || formatYYYYMM(new Date()),
 	);
 
 	useEffect(() => {
-		if (initialMonth) {
-			setCurrentMonth(initialMonth);
-		}
+		if (initialMonth) setCurrentMonth(initialMonth);
 	}, [initialMonth]);
 
 	const handlePreviousMonth = () => {
-		const date = new Date(`${currentMonth}-01`);
+		const date = parseYYYYMMToDate(currentMonth);
 		date.setMonth(date.getMonth() - 1);
-		const newMonth = date.toISOString().slice(0, 7);
+		const newMonth = formatYYYYMM(date);
 		setCurrentMonth(newMonth);
 		onMonthChange(newMonth);
 	};
 
 	const handleNextMonth = () => {
-		const date = new Date(`${currentMonth}-01`);
+		const date = parseYYYYMMToDate(currentMonth);
 		date.setMonth(date.getMonth() + 1);
-		const newMonth = date.toISOString().slice(0, 7);
+		const newMonth = formatYYYYMM(date);
 		setCurrentMonth(newMonth);
 		onMonthChange(newMonth);
 	};
