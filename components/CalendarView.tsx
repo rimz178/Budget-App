@@ -18,7 +18,7 @@ export default function CalendarView({
 }: CalendarViewProps) {
 	const valueString = useMemo(
 		() => (value ? value.toISOString().slice(0, 10) : ""),
-		[value],
+		[value?.getTime()],
 	);
 	const [selectedDate, setSelectedDate] = useState<string>(valueString);
 
