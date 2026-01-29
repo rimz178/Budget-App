@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	Button,
 	Modal,
@@ -29,6 +29,12 @@ export default function AddTransactionModal({
 	const [type, setType] = useState<"tulo" | "meno">("tulo");
 	const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
 	const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+
+	useEffect(() => {
+		if (!visible) {
+			setIsDatePickerOpen(false);
+		}
+	}, [visible]);
 
 	const handleClose = () => {
 		setIsDatePickerOpen(false);
