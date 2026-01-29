@@ -1,29 +1,39 @@
 {
-	"expo": {
-		"name": "BudgetApp",
-		"slug": "BudgetApp",
-		"version": "1.0.0",
-		"orientation": "portrait",
-		"scheme": "budgetapp",
-		"userInterfaceStyle": "automatic",
-		"newArchEnabled": true,
-		"ios": {
-			"supportsTablet": true
-		},
-		"android": {
-			"adaptiveIcon": {
-				"backgroundColor": "#ffffff"
-			},
-			"edgeToEdgeEnabled": true
-		},
-		"web": {
-			"bundler": "metro",
-			"output": "static",
-			"favicon": "./assets/images/favicon.png"
-		},
-		"plugins": ["expo-router", "expo-web-browser"],
-		"experiments": {
-			"typedRoutes": true
-		}
-	}
+  "expo": {
+    "name": "BudgetApp",
+    "slug": "budget-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "budgetapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c0fca8dc-9c24-4d75-ba8e-56a9a3774f3f"
+      }
+    },
+    "owner": "edie17"
+  }
 }
