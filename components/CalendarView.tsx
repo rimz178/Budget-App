@@ -10,13 +10,18 @@ type CalendarViewProps = {
 	hideSelectedText?: boolean;
 };
 
+// Format date as YYYY-MM-DD using local timezone
+const pad2 = (n: number) => String(n).padStart(2, "0");
+const formatYYYYMMDD = (date: Date) =>
+	`${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+
 export default function CalendarView({
 	onDateChange,
 	value,
 	hideTitle,
 	hideSelectedText,
 }: CalendarViewProps) {
-	const valueString = value ? value.toISOString().slice(0, 10) : "";
+	const valueString = value ? formatYYYYMMDD(value) : "";
 	const [selectedDate, setSelectedDate] = useState<string>(valueString);
 
 	useEffect(() => {
