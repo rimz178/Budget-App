@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Text, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { styles } from "../Styles/CalendarStyles";
@@ -16,7 +16,10 @@ export default function CalendarView({
 	hideTitle,
 	hideSelectedText,
 }: CalendarViewProps) {
-	const valueString = value ? value.toISOString().slice(0, 10) : "";
+	const valueString = useMemo(
+		() => (value ? value.toISOString().slice(0, 10) : ""),
+		[value],
+	);
 	const [selectedDate, setSelectedDate] = useState<string>(valueString);
 
 	useEffect(() => {
