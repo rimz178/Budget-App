@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
 	Button,
 	Modal,
-	Pressable,
 	Text,
 	TextInput,
 	TouchableOpacity,
@@ -141,10 +140,6 @@ export default function AddTransactionModal({
 					onRequestClose={() => setIsDatePickerOpen(false)}
 				>
 					<View style={styles.modalContainer}>
-						<Pressable
-							style={styles.backdrop}
-							onPress={() => setIsDatePickerOpen(false)}
-						/>
 						<View style={styles.smallModalContent}>
 							<CalendarView
 								value={selectedDate}
